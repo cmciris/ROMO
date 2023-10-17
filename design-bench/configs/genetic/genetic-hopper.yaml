@@ -1,0 +1,14 @@
+exp: genetic
+logging_dir: logs/genetic/hopper
+model_dir: checkpoints/genetic/hopper
+task: HopperController-Exact-v0
+task_relabel: true
+task_opt_channel: 5100
+normalize_ys: true
+normalize_xs: true
+max_generations: 50
+elite_num: 16
+crossover_rate: 0.3
+mutation_rate: 0.05
+evaluation_samples: 128
+fast: false

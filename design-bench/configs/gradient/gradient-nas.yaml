@@ -1,0 +1,23 @@
+exp: gradient_ascent
+logging_dir: logs/gradient_ascent/nas
+model_dir: checkpoints/gradient_ascent/nas
+task: NASBench-Exact-v0
+task_relabel: false
+task_opt_channel: 30
+normalize_ys: true
+normalize_xs: true
+particle_lr: 0.05  #
+particle_gradient_steps: 50  #
+particle_entropy_coefficient: 0.0
+forward_model_activations: [nn.ReLU, nn.ReLU]
+forward_model_hidden_size: 2048
+forward_model_dropout_p: 0.0
+forward_model_final_tanh: false
+forward_model_lr: 0.0003
+forward_model_noise_std: 0.0
+forward_model_batch_size: 2048  # 128
+forward_model_val_size: 5000  # 500
+forward_model_epochs: 50  #
+forward_model_load: false
+evaluation_samples: 128
+fast: false

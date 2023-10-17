@@ -1,0 +1,36 @@
+logging_dir: logs/rim
+exp: rim
+data_dir: data
+model_dir: checkpoints/rim
+task_score_scale: false
+task_score_range: (0, 100)
+task_relabel: false
+task_max_samples:
+task_distribution:
+task_opt_channel: 2
+task_opt_ub: 1.0
+task_opt_lb: 0.0
+normalize_ys: false
+normalize_xs: false
+in_latent_space: false
+size_retrieval_set: 10
+retrieval_method: distance
+aggr_grad: true
+particle_lr: 0.05  # 0.05
+particle_gradient_steps: 50
+particle_entropy_coefficient: 0.0
+forward_model_activations: [nn.ReLU, nn.ReLU, nn.ReLU, nn.ReLU]
+forward_model_hidden_size: 128
+forward_model_dropout_p: 0.0
+forward_model_final_tanh: false
+forward_model_lr: 0.0003
+forward_model_noise_std: 0.0
+forward_model_batch_size: 2048
+forward_model_train_size: 5000
+forward_model_val_size: 2000
+forward_model_pool_size: 3000
+forward_model_epochs: 200
+forward_model_aggregation_method: ridge
+forward_model_load: false
+evaluation_samples: [50,2]
+fast: false

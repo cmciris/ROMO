@@ -1,0 +1,21 @@
+logging_dir: logs/genetic
+exp: genetic
+data_dir: data
+model_dir: checkpoints/genetic
+task_score_scale: false
+task_score_range: (0, 100)
+task_relabel: false
+task_max_samples:
+task_distribution:
+task_opt_channel: 2
+task_opt_ub: 1.0
+task_opt_lb: 0.0
+normalize_ys: false
+normalize_xs: false
+in_latent_space: false
+max_generations: 200  # 50
+evaluation_samples: [50, 2]
+elite_num: 16
+crossover_rate: 0.3
+mutation_rate: 0.05
+fast: false

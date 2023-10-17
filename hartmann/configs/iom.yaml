@@ -1,0 +1,53 @@
+logging_dir: logs/iom
+exp: iom
+data_dir: data
+model_dir: checkpoints/iom
+task_score_scale: false
+task_score_range: (0, 100)
+task_relabel: false
+task_max_samples:
+task_distribution:
+task_opt_channel: 2
+task_opt_ub: 1.0
+task_opt_lb: 0.0
+normalize_ys: false
+normalize_xs: false
+in_latent_space: false
+particle_lr: 0.05  # 0.05
+particle_train_gradient_steps: 0  # discard
+particle_evaluate_gradient_steps: 50 # 50
+particle_entropy_coefficient: 0.0
+forward_model_activations: [nn.ReLU, nn.ReLU, nn.ReLU, nn.ReLU]
+forward_model_hidden_size: 128
+forward_model_dropout_p: 0.0
+forward_model_final_tanh: false
+forward_model_lr: 0.0003
+forward_model_alpha: 1.0
+forward_model_alpha_lr: 0.01  # 0.01
+forward_model_overestimation_limit: 0.5
+forward_model_noise_std: 0.0
+forward_model_batch_size: 2048  # 128
+forward_model_train_size: 8000
+forward_model_val_size: 2000
+forward_model_epochs: 200  # 50
+forward_model_load: false
+oracle_ensembles: 5
+oracle_activations: [nn.ReLU, nn.ReLU]
+oracle_hidden_size: 2048
+oracle_dropout_p: 0.0
+oracle_final_tanh: false
+oracle_lr: 0.0003
+oracle_noise_std: 0.0
+oracle_batch_size: 2048
+oracle_val_size: 20000
+oracle_epochs: 200
+oracle_load: true
+evaluation_samples: [50, 2]
+fast: false
+latent_space_size: [128, 1]
+rep_model_activations: [nn.ReLU, nn.ReLU]
+rep_model_lr: 0.0003
+rep_model_hidden_size: 128
+noise_input: [1, 10]
+mmd_param: 2
+seed:

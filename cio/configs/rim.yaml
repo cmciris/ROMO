@@ -1,0 +1,49 @@
+logging_dir: logs
+exp: rim
+data_dir: data
+model_dir: checkpoints/rim
+oracle_dir: checkpoints/oracle/fc
+task_score_scale: true
+task_score_range: (0, 100)
+task_relabel: true
+task_max_samples:
+task_distribution:
+task_opt_channel: 36
+task_opt_ub: 8.0
+task_opt_lb: -8.0
+normalize_ys: true
+normalize_xs: true
+in_latent_space: false
+size_retrieval_set: 10
+retrieval_method: distance
+aggr_grad: true
+particle_lr: 0.05  # 0.05
+particle_gradient_steps: 50
+particle_entropy_coefficient: 0.0
+forward_model_activations: [nn.ReLU, nn.ReLU]
+forward_model_hidden_size: 2048
+forward_model_dropout_p: 0.0
+forward_model_final_tanh: false
+forward_model_lr: 0.0003
+forward_model_noise_std: 0.0
+forward_model_batch_size: 2048
+forward_model_train_size: 50000
+forward_model_val_size: 20000
+forward_model_pool_size: 30000
+forward_model_epochs: 200
+forward_model_aggregation_method: ridge
+forward_model_load: false
+oracle_ensembles: 5
+oracle_activations: [nn.ReLU, nn.ReLU]
+oracle_hidden_size: 2048
+oracle_dropout_p: 0.0
+oracle_final_tanh: false
+oracle_lr: 0.0003
+oracle_noise_std: 0.0
+oracle_batch_size: 2048
+oracle_train_size: 80000
+oracle_val_size: 20000
+oracle_epochs: 200
+oracle_load: true
+evaluation_samples: 256
+fast: false

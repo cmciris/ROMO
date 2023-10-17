@@ -1,0 +1,27 @@
+exp: coms
+logging_dir: logs/coms/tfbind8
+model_dir: checkpoints/coms/tfbind8
+task: TFBind8-Exact-v0  # (32898, 8, 3)
+task_relabel: false
+task_opt_channel: 7
+normalize_ys: true
+normalize_xs: true
+particle_lr: 0.05  # 0.05
+particle_train_gradient_steps: 50  # 50
+particle_evaluate_gradient_steps: 50  # 50
+particle_entropy_coefficient: 0.0
+forward_model_activations: [nn.ReLU, nn.ReLU]
+forward_model_hidden_size: 2048
+forward_model_dropout_p: 0.0
+forward_model_final_tanh: false
+forward_model_lr: 0.0003
+forward_model_alpha: 0.1
+forward_model_alpha_lr: 0.01
+forward_model_overestimation_limit: 2.0
+forward_model_noise_std: 0.0
+forward_model_batch_size: 1024  #
+forward_model_val_size: 500  #
+forward_model_epochs: 50  # 50
+forward_model_load: false
+evaluation_samples: 128
+fast: false

@@ -1,0 +1,29 @@
+# Object file
+*.o
+
+# Ada Library Information
+*.ali
+
+# macOS .DS_Store
+.DS_Store
+
+# NAS2020 added file
+._*
+
+# Pycache
+__pycache__/
+
+# Visualization figures
+*.jpg
+*.pdf
+*.png
+
+checkpoints/
+logs/
+
+*.ipynb
+
+*.npy
+*.npz
+cio/data/*.npy
+cio/data/relabel/

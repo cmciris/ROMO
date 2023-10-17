@@ -1,0 +1,58 @@
+logging_dir: logs
+exp: coms_cleaned
+data_dir: data
+model_dir: checkpoints/coms_cleaned
+oracle_dir: checkpoints/oracle/fc
+task_score_scale: true
+task_score_range: (0, 100)
+task_relabel: true
+task_max_samples:
+task_distribution:
+task_opt_channel: 36
+task_opt_ub: 8.0
+task_opt_lb: -8.0
+normalize_ys: true
+normalize_xs: true
+in_latent_space: false
+vae_hidden_size: 64
+vae_latent_size: 256
+vae_activation: relu
+vae_kernel_size: 3
+vae_num_blocks: 4
+vae_lr: 0.0003
+vae_beta: 1.0
+vae_batch_size: 32
+vae_val_size: 200
+vae_epochs: 10
+particle_lr: 0.05
+particle_train_gradient_steps: 100  # 50
+particle_evaluate_gradient_steps: 100  # 50
+particle_entropy_coefficient: 0.0
+forward_model_activations: [nn.ReLU, nn.ReLU]
+forward_model_hidden_size: 2048
+forward_model_dropout_p: 0.0
+forward_model_final_tanh: false
+forward_model_lr: 0.0003
+forward_model_alpha: 0.1  # 1.0
+forward_model_alpha_lr: 0.01
+forward_model_overestimation_limit: 0.5
+forward_model_noise_std: 0.0
+forward_model_batch_size: 512  # 2048
+forward_model_train_size: 80000
+forward_model_val_size: 20000
+forward_model_epochs: 200
+forward_model_load: false
+oracle_ensembles: 5
+oracle_activations: [nn.ReLU, nn.ReLU]
+oracle_hidden_size: 2048
+oracle_dropout_p: 0.0
+oracle_final_tanh: false
+oracle_lr: 0.0003
+oracle_noise_std: 0.0
+oracle_batch_size: 128  # 2048
+oracle_train_size: 80000
+oracle_val_size: 20000
+oracle_epochs: 200
+oracle_load: true
+evaluation_samples: 256
+fast: false

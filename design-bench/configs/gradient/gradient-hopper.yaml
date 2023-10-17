@@ -1,0 +1,23 @@
+exp: gradient_ascent
+logging_dir: logs/gradient_ascent/hopper
+model_dir: checkpoints/gradient_ascent/hopper
+task: HopperController-Exact-v0
+task_relabel: true
+task_opt_channel: 5100
+normalize_ys: true
+normalize_xs: true
+particle_lr: 0.001  # 0.005
+particle_gradient_steps: 250  # 50
+particle_entropy_coefficient: 0.0
+forward_model_activations: [nn.ReLU, nn.ReLU]
+forward_model_hidden_size: 2048
+forward_model_dropout_p: 0.0
+forward_model_final_tanh: false
+forward_model_lr: 0.0003
+forward_model_noise_std: 0.0
+forward_model_batch_size: 128
+forward_model_val_size: 500
+forward_model_epochs: 200
+forward_model_load: false
+evaluation_samples: 128
+fast: false
