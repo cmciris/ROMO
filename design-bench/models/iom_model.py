@@ -269,7 +269,7 @@ class IOMModel(nn.Module):
         statistics[f'validate/prediction'] = d_neg_rep.detach()
 
         alpha_loss = (self.alpha * self.overestimation_limit - self.alpha * overestimation)
-        statistics[f"train/alpha"] = self.alpha.detach().unsqueeze(dim=0)
+        statistics[f"validate/alpha"] = self.alpha.detach().unsqueeze(dim=0)
 
         rep_x = self.rep_model(x)
         rep_x = rep_x/(torch.sqrt(torch.sum(rep_x**2, dim=-1, keepdim=True) + 1e-6) + 1e-6)
