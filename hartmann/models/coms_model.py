@@ -109,9 +109,9 @@ class ConservativeMaximumLikelihood(nn.Module):
         )
 
         # lagrangian dual descent variables
-        log_alpha = np.log(initial_alpha).astype(np.float32)
-        self.log_alpha = torch.tensor(log_alpha, requires_grad=True, device=device)
-        self.alpha_opt = alpha_opt([self.log_alpha], lr=alpha_lr)
+        self.alpha = torch.tensor(alpha, dtype=torch.float32, requires_grad=True, device=device)
+        self.alpha.clamp(1e-10)
+        self.alpha_opt = alpha_opt([self.alpha], lr=alpha_lr)
 
         # parameters for controlling the lagrangian dual descent
         self.target_conservatism = target_conservatism
@@ -220,8 +220,10 @@ class ConservativeMaximumLikelihood(nn.Module):
         statistics[f"train/conservatism"] = conservatism
 
         # build a lagrangian for dual descent
-        alpha_loss = (F.softplus(self.log_alpha) * self.target_conservatism - F.softplus(self.log_alpha) * conservatism)
-        statistics[f"train/alpha"] = F.softplus(self.log_alpha)
+        alpha_loss = (self.alpha * self.target_conservatism - self.alpha * conservatism)
+        statistics[f"train/alpha"] = self.alpha.detach().unsqueeze(dim=0)
+        # alpha_loss = (F.softplus(self.log_alpha) * self.target_conservatism - F.softplus(self.log_alpha) * conservatism)
+        # statistics[f"train/alpha"] = F.softplus(self.log_alpha)
 
         multiplier_loss = 0.0
         if isinstance(self.forward_model[-1], TanhMultiplier):
@@ -230,7 +232,8 @@ class ConservativeMaximumLikelihood(nn.Module):
                 statistics[f"train/tanh_multiplier"] = last_weight
         
         # loss that combines maximum likelihood with a constraint
-        model_loss = mse + F.softplus(self.log_alpha) * conservatism + multiplier_loss
+        model_loss = mse + self.alpha * conservatism + multiplier_loss
+        # model_loss = mse + F.softplus(self.log_alpha) * conservatism + multiplier_loss
         total_loss = torch.mean(model_loss)
         alpha_loss = torch.mean(alpha_loss)
 
@@ -249,6 +252,7 @@ class ConservativeMaximumLikelihood(nn.Module):
         if torch.logical_and(torch.tensor(torch.equal(self.step % self.solver_interval, torch.zeros(1))), torch.greater_equal(self.step, self.solver_warmup)):
             # take gradient steps on the model
             self.alpha_opt.step()
+            self.alpha.clamp(1e-10)
             self.forward_model_opt.step()
 
             # calculate the predicted score of the current solution
@@ -272,6 +276,7 @@ class ConservativeMaximumLikelihood(nn.Module):
         else:
             # take gradient steps on the model
             self.alpha_opt.step()
+            self.alpha.clamp(1e-10)
             self.forward_model_opt.step()
         
         statistics[f"train/done"] = self.done.type(torch.float32)
@@ -587,9 +592,9 @@ class ConservativeObjectiveModel(nn.Module):
         # self.lr_scheduler = optim.lr_scheduler.StepLR(self.forward_model_optim, step_size=50, gamma=0.5)
 
         # lagrangian dual descent variables
-        log_alpha = np.log(alpha).astype(np.float32)
-        self.log_alpha = torch.tensor(log_alpha, requires_grad=True, device=device)
-        self.alpha_optim = alpha_optim([self.log_alpha], lr=alpha_lr)
+        self.alpha = torch.tensor(alpha, dtype=torch.float32, requires_grad=True, device=device)
+        self.alpha.clamp(1e-10)
+        self.alpha_optim = alpha_optim([self.alpha], lr=alpha_lr)
 
         # algorithm hyper parameters
         self.overestimation_limit = overestimation_limit
@@ -709,11 +714,11 @@ class ConservativeObjectiveModel(nn.Module):
         statistics[f"train/overestimation"] = overestimation.detach()
 
         # build a lagrangian for dual descent
-        alpha_loss = (torch.exp(self.log_alpha) * self.overestimation_limit - torch.exp(self.log_alpha) * overestimation)
-        statistics[f"train/alpha"] = torch.exp(self.log_alpha.detach()).unsqueeze(dim=0)
+        alpha_loss = (self.alpha * self.overestimation_limit - self.alpha * overestimation)
+        statistics[f"train/alpha"] = self.alpha.detach().unsqueeze(dim=0)
 
         # loss that combines maximum likelihood with a constraint
-        model_loss = mse + torch.exp(self.log_alpha) * overestimation
+        model_loss = mse + self.alpha * overestimation
         total_loss = torch.mean(model_loss)
         alpha_loss = torch.mean(alpha_loss)
 
@@ -725,6 +730,7 @@ class ConservativeObjectiveModel(nn.Module):
 
         # take gradient steps on the model
         self.alpha_optim.step()
+        self.alpha.clamp(1e-10)
         self.forward_model_optim.step()
 
         return statistics
