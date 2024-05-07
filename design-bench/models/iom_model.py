@@ -52,7 +52,7 @@ class IOMModel(nn.Module):
 
         self.alpha = torch.tensor(alpha, dtype=torch.float32, requires_grad=True, device=device)
         self.alpha.clamp(1e-10)
-        self.alpha_optim = alpha_optim([self.alpha], lr=alpha_lr)
+        self.alpha_opt = alpha_opt([self.alpha], lr=alpha_lr)
 
         self.overestimation_limit = overestimation_limit
         self.opt_limit = opt_limit
