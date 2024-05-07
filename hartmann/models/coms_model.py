@@ -109,7 +109,7 @@ class ConservativeMaximumLikelihood(nn.Module):
         )
 
         # lagrangian dual descent variables
-        self.alpha = torch.tensor(alpha, dtype=torch.float32, requires_grad=True, device=device)
+        self.alpha = torch.tensor(initial_alpha, dtype=torch.float32, requires_grad=True, device=device)
         self.alpha.clamp(1e-10)
         self.alpha_opt = alpha_opt([self.alpha], lr=alpha_lr)
 
@@ -221,7 +221,7 @@ class ConservativeMaximumLikelihood(nn.Module):
 
         # build a lagrangian for dual descent
         alpha_loss = (self.alpha * self.target_conservatism - self.alpha * conservatism)
-        statistics[f"train/alpha"] = self.alpha.detach().unsqueeze(dim=0)
+        statistics[f"train/alpha"] = self.alpha
         # alpha_loss = (F.softplus(self.log_alpha) * self.target_conservatism - F.softplus(self.log_alpha) * conservatism)
         # statistics[f"train/alpha"] = F.softplus(self.log_alpha)
 
