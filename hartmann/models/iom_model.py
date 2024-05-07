@@ -51,9 +51,9 @@ class IOMModel(nn.Module):
         self.rep_model_opt = rep_model_opt(self.rep_model.parameters(), lr=rep_model_lr)
         self.discriminator_model_opt = discriminator_model_opt(self.discriminator_model.parameters(), lr=0.001, betas=(0.5, 0.999))
 
-        log_alpha = np.log(alpha).astype(np.float32)
-        self.log_alpha = torch.tensor(log_alpha, requires_grad=True, device=device)
-        self.alpha_opt = alpha_opt([self.log_alpha], lr=alpha_lr)
+        self.alpha = torch.tensor(alpha, dtype=torch.float32, requires_grad=True, device=device)
+        self.alpha.clamp(1e-10)
+        self.alpha_opt = alpha_opt([self.alpha], lr=alpha_lr)
 
         self.overestimation_limit = overestimation_limit
         self.opt_limit = opt_limit
@@ -135,7 +135,7 @@ class IOMModel(nn.Module):
 
         statistics = dict()
 
-        alpha_param = torch.exp(self.log_alpha)
+        alpha_param = self.alpha
 
         # pass x to the representation network and normalize rep(x)
         rep_x = self.rep_model(x)
@@ -178,8 +178,8 @@ class IOMModel(nn.Module):
         statistics[f'train/prediction'] = d_neg_rep.detach()
 
         # build a lagrangian for dual descent
-        alpha_loss = (torch.exp(self.log_alpha) * self.overestimation_limit - torch.exp(self.log_alpha) * overestimation)
-        statistics[f'train/alpha'] = torch.exp(self.log_alpha.detach()).unsqueeze(dim=0)
+        alpha_loss = (self.alpha * self.overestimation_limit - self.alpha * overestimation)
+        statistics[f"train/alpha"] = self.alpha.detach().unsqueeze(dim=0)
 
         rep_x = self.rep_model(x)
         rep_x = rep_x/(torch.sqrt(torch.sum(rep_x**2, dim=-1, keepdim=True) + 1e-6) + 1e-6)
@@ -237,6 +237,7 @@ class IOMModel(nn.Module):
         d_loss.backward(retain_graph=True)
 
         self.alpha_opt.step()
+        self.alpha.clamp(1e-10)
         self.forward_model_opt.step()
         self.rep_model_opt.step()
         self.discriminator_model_opt.step()
@@ -248,7 +249,7 @@ class IOMModel(nn.Module):
 
         statistics = dict()
 
-        alpha_param = torch.exp(self.log_alpha)
+        alpha_param = self.alpha
 
         rep_x = self.rep_model(x)
         rep_x = rep_x/(torch.sqrt(torch.sum(rep_x**2, dim=-1, keepdim=True) + 1e-6) + 1e-6)
@@ -274,8 +275,8 @@ class IOMModel(nn.Module):
         statistics[f'validate/overestimation'] = overestimation.detach()
         statistics[f'validate/prediction'] = d_neg_rep.detach()
 
-        alpha_loss = (torch.exp(self.log_alpha) * self.overestimation_limit - torch.exp(self.log_alpha) * overestimation)
-        statistics[f'validate/alpha'] = torch.exp(self.log_alpha.detach()).unsqueeze(dim=0)
+        alpha_loss = (self.alpha * self.overestimation_limit - self.alpha * overestimation)
+        statistics[f"train/alpha"] = self.alpha.detach().unsqueeze(dim=0)
 
         rep_x = self.rep_model(x)
         rep_x = rep_x/(torch.sqrt(torch.sum(rep_x**2, dim=-1, keepdim=True) + 1e-6) + 1e-6)
