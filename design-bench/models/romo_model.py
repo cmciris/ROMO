@@ -71,9 +71,9 @@ class RetrievalEnhancedMBO(nn.Module):
         self.lr_scheduler = optim.lr_scheduler.StepLR(self.forward_model_optim, step_size=50, gamma=0.5)
 
         # lagrangian dual descent variables
-        log_alpha = np.log(alpha).astype(np.float32)
-        self.log_alpha = torch.tensor(log_alpha, requires_grad=True, device=device)
-        self.alpha_optim = alpha_optim([self.log_alpha], lr=alpha_lr)
+        self.alpha = torch.tensor(alpha, dtype=torch.float32, requires_grad=True, device=device)
+        self.alpha.clamp(1e-10)
+        self.alpha_optim = alpha_optim([self.alpha], lr=alpha_lr)
 
         # algorithm hyper parameters
         self.overestimation_limit = overestimation_limit
@@ -250,11 +250,11 @@ class RetrievalEnhancedMBO(nn.Module):
         statistics[f"train/overestimation"] = overestimation.detach()
         
         # build a lagrangian for dual descent
-        alpha_loss = (torch.exp(self.log_alpha) * self.overestimation_limit - torch.exp(self.log_alpha) * overestimation)
-        statistics[f"train/alpha"] = torch.exp(self.log_alpha.detach()).unsqueeze(dim=0)
+        alpha_loss = (self.alpha * self.overestimation_limit - self.alpha * overestimation)
+        statistics[f"train/alpha"] = self.alpha.detach().unsqueeze(dim=0)
         
         # build the total loss and weight by the bootstrap
-        model_loss = nll + F.mse_loss(output_1, output_0) * self.mse_loss_weight + torch.exp(self.log_alpha) * overestimation
+        model_loss = nll + F.mse_loss(output_1, output_0) * self.mse_loss_weight + self.alpha * overestimation
         total_loss = torch.mean(model_loss) + multiplier_loss
         alpha_loss = torch.mean(alpha_loss)
 
@@ -266,6 +266,7 @@ class RetrievalEnhancedMBO(nn.Module):
 
         # take gradient steps on the model
         self.alpha_optim.step()
+        self.alpha.clamp(1e-10)
         self.forward_model_optim.step()
 
         return statistics
